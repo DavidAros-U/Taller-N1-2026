@@ -2,6 +2,8 @@
 #include "../include/reproductor.h"
 #include "../include/cola.h"
 #include "../include/pila.h"
+#include <cstdlib>
+#include <ctime>
 
 using namespace std;
 
@@ -82,6 +84,7 @@ void cambiarModoRandom(Reproductor& r) {
     r.modoRandom = !r.modoRandom;
 
     if (r.modoRandom) {
+        mezclarCola(r);
         cout << "Modo aleatorio activado\n";
     } else {
         cout << "Modo aleatorio desactivado\n";
@@ -123,4 +126,38 @@ void mostrarEstado(Reproductor& r) {
         cout << ")";
     }
     cout << ": " << r.actual->nombre << endl;
+}
+
+void mezclarCola(Reproductor& r) {
+
+    if (r.frente == NULL) return;
+    int n = 0;
+    NodoCola* aux = r.frente;
+
+    while (aux != NULL) {
+        n++;
+        aux = aux->next;
+    }
+    Cancion** arr = new Cancion*[n];
+
+    aux = r.frente;
+    for (int i = 0; i < n; i++) {
+        arr[i] = aux->data;
+        aux = aux->next;
+    }
+    srand(time(NULL));
+
+    for (int i = n - 1; i > 0; i--) {
+        int j = rand() % (i + 1);
+        Cancion* temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }
+    vaciarCola(r.frente, r.final);
+
+    for (int i = 0; i < n; i++) {
+        encolar(r.frente, r.final, arr[i]);
+    }
+
+    delete[] arr;
 }
