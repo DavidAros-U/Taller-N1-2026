@@ -8,16 +8,24 @@ int main() {
 
     Reproductor r;
     inicializarReproductor(r);
+
     cargarCanciones(r.listaCanciones, "data/music_source.txt");
     cargarColaInicial(r);
 
-    cout << "\n>>> Primera canción\n";
     siguiente(r);
+    mostrarEstado(r);
 
-    cout << "\n>>> Siguiente (E)\n";
+    reproducirPausar(r);
+    mostrarEstado(r);
+
+    reproducirPausar(r);
+    mostrarEstado(r);
+
+    cambiarModoRandom(r);
+    cambiarModoRepeat(r);
+    mostrarEstado(r);
+
     siguiente(r);
-
-    cout << "\n>>> Anterior (Q)\n";
     anterior(r);
 
     return 0;
