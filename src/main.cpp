@@ -11,7 +11,11 @@ int main() {
     inicializarReproductor(r);
 
     cargarCanciones(r.listaCanciones, "data/music_source.txt");
-    cargarColaInicial(r);
+    cargarEstado(r, "data/status.cfg");
+
+    if (r.frente == NULL && r.actual == NULL) {
+        cargarColaInicial(r);
+    }
 
     char opcion;
 
@@ -64,6 +68,7 @@ int main() {
         if (opcion != 'X') {
             pausarPantalla();
         }
+        guardarEstado(r, "data/status.cfg");
 
     } while(opcion != 'X');
 
