@@ -1,7 +1,7 @@
 #include <iostream>
 #include "../include/reproductor.h"
 #include "../include/archivos.h"
-#include "../include/cola.h"
+#include "../include/consola.h"
 
 using namespace std;
 
@@ -13,23 +13,59 @@ int main() {
     cargarCanciones(r.listaCanciones, "data/music_source.txt");
     cargarColaInicial(r);
 
-    cout << "\nCOLA ORIGINAL:\n";
-    mostrarCola(r.frente);
+    char opcion;
 
-    siguiente(r);
-    mostrarEstado(r);
+    do {
+        limpiarPantalla();
+        mostrarMenu(r);
 
-    cout << "\n>>> Activando RANDOM\n";
-    cambiarModoRandom(r);
+        opcion = leerOpcion();
 
-    cout << "\nCOLA MEZCLADA:\n";
-    mostrarCola(r.frente);
+        limpiarPantalla();
 
-    cout << "\n>>> Siguiente (E)\n";
-    siguiente(r);
+        switch(opcion) {
 
-    cout << "\n>>> Anterior (Q)\n";
-    anterior(r);
+            case 'W':
+                reproducirPausar(r);
+                break;
+
+            case 'Q':
+                anterior(r);
+                break;
+
+            case 'E':
+                siguiente(r);
+                break;
+
+            case 'S':
+                cambiarModoRandom(r);
+                break;
+
+            case 'R':
+                cambiarModoRepeat(r);
+                break;
+
+            case 'A':
+                submenuPlaylist(r);
+                break;
+
+            case 'L':
+                cout << "Submenu listado de canciones pendiente.\n";
+                break;
+
+            case 'X':
+                cout << "Saliendo...\n";
+                break;
+
+            default:
+                cout << "Opcion invalida\n";
+        }
+
+        if (opcion != 'X') {
+            pausarPantalla();
+        }
+
+    } while(opcion != 'X');
 
     return 0;
 }

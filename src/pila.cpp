@@ -1,6 +1,5 @@
 #include <iostream>
 #include "../include/pila.h"
-
 using namespace std;
 
 void inicializarPila(NodoPila*& tope) {

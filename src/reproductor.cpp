@@ -2,9 +2,9 @@
 #include "../include/reproductor.h"
 #include "../include/cola.h"
 #include "../include/pila.h"
+#include "../include/consola.h"
 #include <cstdlib>
 #include <ctime>
-
 using namespace std;
 
 void inicializarReproductor(Reproductor& r) {
@@ -28,15 +28,29 @@ void cargarColaInicial(Reproductor& r) {
 }
 
 void siguiente(Reproductor& r) {
+    if (r.listaCanciones == NULL) return;
+
     if (r.modoRepeat == 1 && r.actual != NULL) {
+        r.estado = 1;
         cout << "Reproduciendo: " << r.actual->nombre << " - " << r.actual->artista << endl;
         return;
+    }
+
+    if (r.frente == NULL) {
+        if (r.modoRepeat == 2) {
+            reconstruirCola(r);
+        } else if (r.actual == NULL) {
+            reconstruirCola(r);
+        } else {
+            r.estado = 0;
+            cout << "No hay más canciones.\n";
+            return;
+        }
     }
 
     if (r.actual != NULL) {
         push(r.tope, r.actual);
     }
-
     r.actual = desencolar(r.frente, r.final);
 
     if (r.actual != NULL) {
@@ -160,4 +174,188 @@ void mezclarCola(Reproductor& r) {
     }
 
     delete[] arr;
+}
+
+void reconstruirCola(Reproductor& r) {
+    vaciarCola(r.frente, r.final);
+    NodoLista* aux = r.listaCanciones;
+
+    while (aux != NULL) {
+        if (r.actual == NULL || aux->data.id != r.actual->id) {
+            encolar(r.frente, r.final, &(aux->data));
+        }
+        aux = aux->next;
+    }
+
+    if (r.modoRandom) {
+        mezclarCola(r);
+    }
+}
+
+void mostrarMenu(Reproductor& r) {
+
+    cout << "\n";
+
+    if (r.actual != NULL) {
+
+        cout << (r.estado == 1 ? "Reproduciendo" :
+                 r.estado == 2 ? "En pausa" :
+                 "Detenido");
+
+        bool tieneModo = r.modoRandom || r.modoRepeat != 0;
+
+        if (tieneModo) {
+
+            cout << " (";
+
+            if (r.modoRandom) {
+                cout << "S";
+            }
+
+            if (r.modoRepeat == 1) {
+                if (r.modoRandom) cout << "-";
+                cout << "R1";
+            } else if (r.modoRepeat == 2) {
+                if (r.modoRandom) cout << "-";
+                cout << "RA";
+            }
+
+            cout << ")";
+        }
+
+        cout << ": " << r.actual->nombre << endl;
+        cout << "Artista: " << r.actual->artista << endl;
+        cout << "Album: " << r.actual->album
+             << " [" << r.actual->anio << "]" << endl;
+
+    } else {
+
+        cout << "Reproduccion detenida\n";
+    }
+
+    cout << "\nOpciones:\n";
+    cout << "W - Reproducir/Pausar\n";
+    cout << "Q - Pista Anterior\n";
+    cout << "E - Pista Siguiente\n";
+    cout << "S - Activar/Desactivar modo aleatorio\n";
+    cout << "R - Cambiar repeticion\n";
+    cout << "A - Ver lista de reproduccion actual\n";
+    cout << "L - Listado de canciones\n";
+    cout << "X - Salir\n";
+
+    cout << "\nIngrese opcion: ";
+}
+
+void saltarCancion(Reproductor& r, int posicion) {
+
+    if (r.frente == NULL || posicion <= 0) {
+        return;
+    }
+
+    NodoCola* actualNodo = r.frente;
+    NodoCola* anterior = NULL;
+
+    int contador = 1;
+
+    while (actualNodo != NULL && contador < posicion) {
+
+        NodoCola* temp = actualNodo;
+
+        actualNodo = actualNodo->next;
+
+        delete temp;
+
+        contador++;
+    }
+
+    if (actualNodo == NULL) {
+        return;
+    }
+
+    if (r.actual != NULL) {
+        push(r.tope, r.actual);
+    }
+
+    r.frente = actualNodo->next;
+
+    if (r.frente == NULL) {
+        r.final = NULL;
+    }
+
+    r.actual = actualNodo->data;
+
+    delete actualNodo;
+
+    r.estado = 1;
+
+    cout << "Reproduciendo: "
+         << r.actual->nombre
+         << " - "
+         << r.actual->artista
+         << endl;
+}
+
+void submenuPlaylist(Reproductor& r) {
+
+    char opcion;
+
+    do {
+
+        limpiarPantalla();
+
+        if (r.actual != NULL) {
+
+            cout << "Actual: "
+                 << r.actual->nombre
+                 << " - "
+                 << r.actual->artista
+                 << endl;
+
+        } else {
+
+            cout << "Actual: Ninguna\n";
+        }
+
+        cout << "\nLista de reproduccion actual:\n";
+
+        if (r.frente == NULL) {
+
+            cout << "Vacia\n";
+
+        } else {
+
+            mostrarCola(r.frente);
+        }
+
+        cout << "\nOpciones:\n";
+
+        if (r.frente != NULL) {
+            cout << "S<num> - Saltar a cancion\n";
+        }
+
+        cout << "V - Volver\n";
+
+        cout << "\nIngrese opcion: ";
+
+        string entrada;
+        getline(cin, entrada);
+
+        if (entrada.length() == 0) {
+            continue;
+        }
+
+        opcion = toupper(entrada[0]);
+
+        if (opcion == 'S' && entrada.length() > 1) {
+
+            int posicion = stoi(entrada.substr(1));
+
+            saltarCancion(r, posicion);
+
+            pausarPantalla();
+
+            return;
+        }
+
+    } while(opcion != 'V');
 }
