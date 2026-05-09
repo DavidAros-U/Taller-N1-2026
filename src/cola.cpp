@@ -78,3 +78,35 @@ void mostrarCola(NodoCola* frente) {
         i++;
     }
 }
+
+void eliminarDeColaPorID(NodoCola*& frente, NodoCola*& final, int id) {
+    NodoCola* actual = frente;
+    NodoCola* anterior = NULL;
+
+    while (actual != NULL) {
+        if (actual->data != NULL && actual->data->id == id) {
+            NodoCola* eliminar = actual;
+
+            if (anterior == NULL) {
+                frente = actual->next;
+                actual = frente;
+            } else {
+                anterior->next = actual->next;
+                actual = anterior->next;
+            }
+
+            if (eliminar == final) {
+                final = anterior;
+            }
+
+            delete eliminar;
+        } else {
+            anterior = actual;
+            actual = actual->next;
+        }
+    }
+
+    if (frente == NULL) {
+        final = NULL;
+    }
+}

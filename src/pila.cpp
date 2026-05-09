@@ -34,3 +34,27 @@ void vaciarPila(NodoPila*& tope) {
         delete temp;
     }
 }
+
+void eliminarDePilaPorID(NodoPila*& tope, int id) {
+    NodoPila* actual = tope;
+    NodoPila* anterior = NULL;
+
+    while (actual != NULL) {
+        if (actual->data != NULL && actual->data->id == id) {
+            NodoPila* eliminar = actual;
+
+            if (anterior == NULL) {
+                tope = actual->next;
+                actual = tope;
+            } else {
+                anterior->next = actual->next;
+                actual = anterior->next;
+            }
+
+            delete eliminar;
+        } else {
+            anterior = actual;
+            actual = actual->next;
+        }
+    }
+}

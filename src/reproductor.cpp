@@ -447,7 +447,6 @@ void agregarNuevaCancion(Reproductor& r) {
 }
 
 void eliminarCancionReproductor(Reproductor& r, int posicion) {
-
     Cancion* c = buscarCancionPorPosicion(r.listaCanciones, posicion);
 
     if (c == NULL) {
@@ -457,9 +456,24 @@ void eliminarCancionReproductor(Reproductor& r, int posicion) {
 
     int id = c->id;
 
+    eliminarDeColaPorID(r.frente, r.final, id);
+    eliminarDePilaPorID(r.tope, id);
+
+    if (r.actual != NULL && r.actual->id == id) {
+        r.actual = NULL;
+
+        if (r.frente != NULL) {
+            r.actual = desencolar(r.frente, r.final);
+            r.estado = 1;
+        } else {
+            r.estado = 0;
+        }
+    }
+
     eliminarCancion(r.listaCanciones, id);
 
     guardarCanciones(r.listaCanciones, "data/music_source.txt");
+    guardarEstado(r, "data/status.cfg");
 
     cout << "Cancion eliminada correctamente\n";
 }

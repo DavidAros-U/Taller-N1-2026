@@ -7,5 +7,6 @@ void push(NodoPila*& tope, Cancion* c);
 Cancion* pop(NodoPila*& tope);
 bool pilaVacia(NodoPila* tope);
 void vaciarPila(NodoPila*& tope);
+void eliminarDePilaPorID(NodoPila*& tope, int id);
 
 #endif

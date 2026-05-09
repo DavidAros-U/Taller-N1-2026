@@ -9,5 +9,6 @@ void insertarAlFrente(NodoCola*& frente, NodoCola*& final, Cancion* c);
 bool colaVacia(NodoCola* frente);
 void vaciarCola(NodoCola*& frente, NodoCola*& final);
 void mostrarCola(NodoCola* frente);
+void eliminarDeColaPorID(NodoCola*& frente, NodoCola*& final, int id);
 
 #endif
