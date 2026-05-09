@@ -80,3 +80,26 @@ bool eliminarCancion(NodoLista*& lista, int id) {
     }
     return false;
 }
+
+Cancion* buscarCancionPorPosicion(NodoLista* lista, int posicion) {
+
+    if (posicion <= 0) {
+        return NULL;
+    }
+
+    NodoLista* aux = lista;
+
+    int contador = 1;
+
+    while (aux != NULL) {
+
+        if (contador == posicion) {
+            return &(aux->data);
+        }
+
+        aux = aux->next;
+        contador++;
+    }
+
+    return NULL;
+}

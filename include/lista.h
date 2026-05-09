@@ -8,5 +8,6 @@ void insertarCancion(NodoLista*& lista, Cancion c);
 void mostrarCanciones(NodoLista* lista);
 Cancion* buscarCancionPorID(NodoLista* lista, int id);
 bool eliminarCancion(NodoLista*& lista, int id);
+Cancion* buscarCancionPorPosicion(NodoLista* lista, int posicion);
 
 #endif

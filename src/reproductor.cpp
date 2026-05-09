@@ -3,6 +3,9 @@
 #include "../include/cola.h"
 #include "../include/pila.h"
 #include "../include/consola.h"
+#include "../include/lista.h"
+#include "../include/archivos.h"
+#include "../include/consola.h"
 #include <cstdlib>
 #include <ctime>
 using namespace std;
@@ -355,6 +358,185 @@ void submenuPlaylist(Reproductor& r) {
             pausarPantalla();
 
             return;
+        }
+
+    } while(opcion != 'V');
+}
+
+void reproducirCancion(Reproductor& r, int posicion) {
+
+    Cancion* c = buscarCancionPorPosicion(r.listaCanciones, posicion);
+
+    if (c == NULL) {
+        cout << "Cancion invalida\n";
+        return;
+    }
+
+    vaciarCola(r.frente, r.final);
+
+    if (r.actual != NULL) {
+        push(r.tope, r.actual);
+    }
+
+    r.actual = c;
+
+    NodoLista* aux = r.listaCanciones;
+
+    while (aux != NULL) {
+
+        if (aux->data.id != r.actual->id) {
+            encolar(r.frente, r.final, &(aux->data));
+        }
+
+        aux = aux->next;
+    }
+
+    if (r.modoRandom) {
+        mezclarCola(r);
+    }
+
+    r.estado = 1;
+
+    cout << "Reproduciendo: "
+         << r.actual->nombre
+         << " - "
+         << r.actual->artista
+         << endl;
+}
+
+void agregarCancionACola(Reproductor& r, int posicion) {
+
+    Cancion* c = buscarCancionPorPosicion(r.listaCanciones, posicion);
+
+    if (c == NULL) {
+        cout << "Cancion invalida\n";
+        return;
+    }
+
+    encolar(r.frente, r.final, c);
+
+    cout << "Cancion agregada a la cola\n";
+}
+
+void agregarNuevaCancion(Reproductor& r) {
+
+    Cancion c;
+
+    c.id = ++r.contadorIDs;
+
+    cout << "Nombre: ";
+    getline(cin, c.nombre);
+
+    cout << "Artista: ";
+    getline(cin, c.artista);
+
+    cout << "Album: ";
+    getline(cin, c.album);
+
+    c.anio = leerEntero("Anio: ");
+    c.duracion = leerEntero("Duracion: ");
+
+    cout << "Ruta: ";
+    getline(cin, c.ruta);
+
+    insertarCancion(r.listaCanciones, c);
+
+    guardarCanciones(r.listaCanciones, "data/music_source.txt");
+
+    cout << "Cancion agregada correctamente\n";
+}
+
+void eliminarCancionReproductor(Reproductor& r, int posicion) {
+
+    Cancion* c = buscarCancionPorPosicion(r.listaCanciones, posicion);
+
+    if (c == NULL) {
+        cout << "Cancion invalida\n";
+        return;
+    }
+
+    int id = c->id;
+
+    eliminarCancion(r.listaCanciones, id);
+
+    guardarCanciones(r.listaCanciones, "data/music_source.txt");
+
+    cout << "Cancion eliminada correctamente\n";
+}
+
+void submenuCanciones(Reproductor& r) {
+
+    string entrada;
+    char opcion;
+
+    do {
+
+        limpiarPantalla();
+
+        if (r.actual != NULL) {
+
+            cout << "Actual: "
+                 << r.actual->nombre
+                 << " - "
+                 << r.actual->artista
+                 << endl;
+
+        } else {
+
+            cout << "Actual: Ninguna\n";
+        }
+
+        cout << "\nCanciones registradas:\n\n";
+
+        mostrarCanciones(r.listaCanciones);
+
+        cout << "\nOpciones:\n";
+        cout << "R<num> - Reproducir cancion\n";
+        cout << "A<num> - Agregar cancion a cola\n";
+        cout << "N - Nueva cancion\n";
+        cout << "D<num> - Eliminar cancion\n";
+        cout << "V - Volver\n";
+
+        cout << "\nIngrese opcion: ";
+
+        getline(cin, entrada);
+
+        if (entrada.length() == 0) {
+            continue;
+        }
+
+        opcion = toupper(entrada[0]);
+
+        if ((opcion == 'R' ||
+             opcion == 'A' ||
+             opcion == 'D') &&
+             entrada.length() > 1) {
+
+            int posicion = stoi(entrada.substr(1));
+
+            switch(opcion) {
+
+                case 'R':
+                    reproducirCancion(r, posicion);
+                    break;
+
+                case 'A':
+                    agregarCancionACola(r, posicion);
+                    break;
+
+                case 'D':
+                    eliminarCancionReproductor(r, posicion);
+                    break;
+            }
+
+            pausarPantalla();
+        }
+
+        else if (opcion == 'N') {
+
+            agregarNuevaCancion(r);
+
+            pausarPantalla();
         }
 
     } while(opcion != 'V');

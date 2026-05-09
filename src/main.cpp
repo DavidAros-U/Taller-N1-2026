@@ -50,7 +50,7 @@ int main() {
                 break;
 
             case 'L':
-                cout << "Submenu listado de canciones pendiente.\n";
+                submenuCanciones(r);
                 break;
 
             case 'X':

@@ -15,5 +15,9 @@ void mostrarEstado(Reproductor& r);
 void mezclarCola(Reproductor& r);
 void submenuPlaylist(Reproductor& r);
 void saltarCancion(Reproductor& r, int posicion);
-
+void submenuCanciones(Reproductor& r);
+void reproducirCancion(Reproductor& r, int posicion);
+void agregarCancionACola(Reproductor& r, int posicion);
+void agregarNuevaCancion(Reproductor& r);
+void eliminarCancionReproductor(Reproductor& r, int posicion);
 #endif
